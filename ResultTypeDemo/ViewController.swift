@@ -33,6 +33,10 @@ class ViewController: UIViewController {
         }
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        
+    }
+    
     
     fileprivate func fetchCoursesJSON(completion: @escaping ([Course]?, Error?) -> () ) {
         
