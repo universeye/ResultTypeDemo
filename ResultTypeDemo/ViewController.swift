@@ -22,23 +22,30 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        fetchCoursesJSON { (courseaa, err) in
-            if let err = err {
-                print("fail to fetch", err)
-            } else {
-                courseaa?.forEach({ (course) in
-                    print(course.name)
-                })
+        fetchCoursesJSON { (res) in
+            switch res {
+            case .success(let courses):
+                courses.forEach { (courses) in
+                    print(courses.name)
+                }
+            case .failure(let error):
+                print("fail to fetch", error)
             }
         }
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
         
+//        fetchCoursesJSON { (courseaa, err) in
+//            if let err = err {
+//                print("fail to fetch", err)
+//            } else {
+//                courseaa?.forEach({ (course) in
+//                    print(course.name)
+//                })
+//            }
+//        }
     }
     
     
-    fileprivate func fetchCoursesJSON(completion: @escaping ([Course]?, Error?) -> () ) {
+    fileprivate func fetchCoursesJSON(completion: @escaping (Result<[Course], Error>) -> () ) {
         
         let urlString = "https://api.letsbuildthatapp.com/jsondecodable/courses"
         
@@ -49,7 +56,7 @@ class ViewController: UIViewController {
         URLSession.shared.dataTask(with: url) { (data, response, error) in
             //check error first
             if let err = error {
-                completion(nil, err)
+                completion(.failure(err))
                 return
             }
             
@@ -58,9 +65,10 @@ class ViewController: UIViewController {
             
             do {
                 let courses = try JSONDecoder().decode([Course].self, from: data!)
-                completion(courses, nil)
+                completion(.success(courses))
             } catch let JSONError{
-                completion(nil, JSONError)
+                completion(.failure(JSONError))
+               // completion(nil, JSONError)
             }
             
             
